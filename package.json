@@ -23,6 +23,15 @@
     "llm"
   ],
   "license": "MIT",
+  "author": "Ash310u <ashutoshsaha233@gmail.com> (https://github.com/Ash310u)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ash310u/awesome-ai-stack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Ash310u/awesome-ai-stack/issues"
+  },
+  "homepage": "https://github.com/Ash310u/awesome-ai-stack#readme",
   "engines": {
     "node": ">=18"
   },

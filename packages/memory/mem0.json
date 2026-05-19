@@ -1,0 +1,29 @@
+{
+  "id": "mem0",
+  "name": "Mem0",
+  "category": "memory",
+  "description": "Self-improving memory for AI agents — store and retrieve user preferences",
+  "install": {
+    "npx": "npx -y mcp-add@latest",
+    "npm": "npm install -g mcp-add"
+  },
+  "mcp_add": {
+    "name": "mem0-mcp",
+    "type": "http", 
+    "url": "https://mcp.mem0.ai/mcp",
+    "scope": "global",
+    "env_key": "MEM0_API_KEY",
+    "auth_header": "Authorization",
+    "auth_prefix": "Token ",
+    "clients": {
+      "claude_desktop": "claude",
+      "cursor": "cursor",
+      "windsurf": "windsurf"
+    }
+  },
+  "config_target": ["claude_desktop", "cursor", "windsurf"],
+  "config_snippet": {},
+  "tags": ["developer", "researcher", "memory"],
+  "docs_url": "https://docs.mem0.ai/platform/mem0-mcp",
+  "verified": true
+}

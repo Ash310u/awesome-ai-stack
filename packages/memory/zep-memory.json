@@ -1,0 +1,25 @@
+{
+  "id": "zep-memory",
+  "name": "Zep Memory",
+  "category": "memory",
+  "description": "Long-term memory and knowledge graph for production AI assistants",
+  "install": {
+    "npx": "npx -y @getzep/zep-mcp@latest",
+    "npm": "npm install -g @getzep/zep-mcp"
+  },
+  "config_target": ["claude_desktop", "cursor", "windsurf"],
+  "config_snippet": {
+    "mcpServers": {
+      "zep": {
+        "command": "npx",
+        "args": ["-y", "@getzep/zep-mcp@latest"],
+        "env": {
+          "ZEP_API_KEY": "YOUR_API_KEY"
+        }
+      }
+    }
+  },
+  "tags": ["developer", "researcher", "memory"],
+  "docs_url": "https://docs.getzep.com/integrations/mcp",
+  "verified": true
+}

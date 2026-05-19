@@ -1,0 +1,25 @@
+{
+  "id": "firecrawl",
+  "name": "Firecrawl",
+  "category": "mcp",
+  "description": "Crawl and scrape websites into clean markdown for LLM context",
+  "install": {
+    "npx": "npx -y firecrawl-mcp@latest",
+    "npm": "npm install -g firecrawl-mcp"
+  },
+  "config_target": ["claude_desktop", "cursor", "windsurf"],
+  "config_snippet": {
+    "mcpServers": {
+      "firecrawl": {
+        "command": "npx",
+        "args": ["-y", "firecrawl-mcp@latest"],
+        "env": {
+          "FIRECRAWL_API_KEY": "YOUR_API_KEY"
+        }
+      }
+    }
+  },
+  "tags": ["researcher", "marketer", "scraping", "web"],
+  "docs_url": "https://docs.firecrawl.dev/mcp",
+  "verified": true
+}

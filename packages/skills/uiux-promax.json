@@ -1,0 +1,19 @@
+{
+  "id": "uiux-promax",
+  "name": "UIUX ProMax",
+  "category": "skill",
+  "description": "Premium UI/UX generation skill",
+  "install": {
+    "npx": "npx -y uiux-promax@latest",
+    "npm": "npm install -g uiux-promax"
+  },
+  "config_target": [
+    "claude_desktop",
+    "cursor",
+    "windsurf"
+  ],
+  "config_snippet": {},
+  "tags": ["designer", "uiux", "frontend"],
+  "docs_url": "https://www.npmjs.com/package/uiux-promax",
+  "verified": false
+}

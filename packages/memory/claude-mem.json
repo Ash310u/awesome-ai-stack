@@ -1,0 +1,22 @@
+{
+  "id": "claude-mem",
+  "name": "Claude Mem",
+  "category": "memory",
+  "description": "Persistent memory layer that recalls context across Claude sessions",
+  "install": {
+    "npx": "npx -y claude-mem@latest",
+    "npm": "npm install -g claude-mem"
+  },
+  "config_target": ["claude_desktop", "cursor"],
+  "config_snippet": {
+    "mcpServers": {
+      "claude-mem": {
+        "command": "npx",
+        "args": ["-y", "claude-mem@latest"]
+      }
+    }
+  },
+  "tags": ["developer", "researcher", "memory"],
+  "docs_url": "https://github.com/thedotmack/claude-mem",
+  "verified": true
+}

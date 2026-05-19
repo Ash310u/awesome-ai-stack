@@ -1,0 +1,25 @@
+{
+  "id": "github-mcp",
+  "name": "GitHub MCP",
+  "category": "mcp",
+  "description": "Manage repos, issues, PRs, and code search from your AI client",
+  "install": {
+    "npx": "npx -y @modelcontextprotocol/server-github@latest",
+    "npm": "npm install -g @modelcontextprotocol/server-github"
+  },
+  "config_target": ["claude_desktop", "cursor", "windsurf"],
+  "config_snippet": {
+    "mcpServers": {
+      "github": {
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-github@latest"],
+        "env": {
+          "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_TOKEN"
+        }
+      }
+    }
+  },
+  "tags": ["developer", "git", "github"],
+  "docs_url": "https://github.com/modelcontextprotocol/servers/tree/main/src/github",
+  "verified": true
+}

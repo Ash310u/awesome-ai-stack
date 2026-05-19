@@ -1,0 +1,22 @@
+{
+  "id": "browseruse",
+  "name": "Browser Use",
+  "category": "mcp",
+  "description": "Automate browser tasks — navigate, click, scrape, and fill forms",
+  "install": {
+    "npx": "npx -y @browserbasehq/mcp-server-browserbase@latest",
+    "npm": "npm install -g @browserbasehq/mcp-server-browserbase"
+  },
+  "config_target": ["claude_desktop", "cursor", "windsurf"],
+  "config_snippet": {
+    "mcpServers": {
+      "browseruse": {
+        "command": "npx",
+        "args": ["-y", "@browserbasehq/mcp-server-browserbase@latest"]
+      }
+    }
+  },
+  "tags": ["developer", "automation", "browser"],
+  "docs_url": "https://docs.browserbase.com/integrations/mcp",
+  "verified": true
+}

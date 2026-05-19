@@ -1,0 +1,25 @@
+{
+  "id": "perplexity-mcp",
+  "name": "Perplexity MCP",
+  "category": "mcp",
+  "description": "Real-time web search and answers powered by Perplexity",
+  "install": {
+    "npx": "npx -y @perplexity-ai/mcp-server@latest",
+    "npm": "npm install -g @perplexity-ai/mcp-server"
+  },
+  "config_target": ["claude_desktop", "cursor", "windsurf"],
+  "config_snippet": {
+    "mcpServers": {
+      "perplexity": {
+        "command": "npx",
+        "args": ["-y", "@perplexity-ai/mcp-server@latest"],
+        "env": {
+          "PERPLEXITY_API_KEY": "YOUR_API_KEY"
+        }
+      }
+    }
+  },
+  "tags": ["researcher", "marketer", "search"],
+  "docs_url": "https://docs.perplexity.ai/guides/mcp",
+  "verified": true
+}

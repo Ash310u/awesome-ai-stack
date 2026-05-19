@@ -1,0 +1,22 @@
+{
+  "id": "context7",
+  "name": "Context7",
+  "category": "mcp",
+  "description": "Live docs context for LLMs — always up to date",
+  "install": {
+    "npx": "npx -y @upstash/context7-mcp@latest",
+    "npm": "npm install -g @upstash/context7-mcp"
+  },
+  "config_target": ["claude_desktop", "cursor", "windsurf"],
+  "config_snippet": {
+    "mcpServers": {
+      "context7": {
+        "command": "npx",
+        "args": ["-y", "@upstash/context7-mcp@latest"]
+      }
+    }
+  },
+  "tags": ["developer", "docs", "context"],
+  "docs_url": "https://github.com/upstash/context7",
+  "verified": true
+}

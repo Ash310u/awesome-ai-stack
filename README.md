@@ -10,13 +10,6 @@
 npx awesome-ai-stack
 ```
 
-Or install globally:
-
-```bash
-npm install -g awesome-ai-stack
-awesome-ai-stack
-```
-
 ## What it installs
 
 - **MCP Servers** — Context7, Browser Use, Firecrawl, GitHub MCP, Perplexity MCP

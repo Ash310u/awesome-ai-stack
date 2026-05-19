@@ -15,7 +15,7 @@ const TARGETS = [
 export function TargetSelect({ onSelect, onBack }) {
   return (
     <Box flexDirection="column">
-      <Text bold>Where should aistack configure these tools?</Text>
+      <Text bold>Where should awesome-ai-stack configure these tools?</Text>
       <Text dimColor>Esc to go back</Text>
       <Box marginTop={1}>
         <SelectInput

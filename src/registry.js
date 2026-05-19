@@ -10,17 +10,17 @@ const PACKAGES_DIR = path.join(ROOT, 'packages');
 const ROLES_DIR = path.join(ROOT, 'roles');
 
 const REGISTRY_BASE =
-  process.env.AISTACK_REGISTRY_URL ??
-  'https://raw.githubusercontent.com/ash310u/aistack/main';
+  process.env.AWESOME_AI_STACK_REGISTRY_URL ??
+  'https://raw.githubusercontent.com/Ash310u/awesome-ai-stack/main';
 
-const CACHE_DIR = path.join(os.homedir(), '.cache', 'aistack');
+const CACHE_DIR = path.join(os.homedir(), '.cache', 'awesome-ai-stack');
 
 let packagesCache = null;
 let rolesCache = null;
 
 /** @returns {Promise<boolean>} */
 async function useLocalRegistry() {
-  if (process.env.AISTACK_USE_LOCAL === '1') return true;
+  if (process.env.AWESOME_AI_STACK_USE_LOCAL === '1') return true;
   try {
     await fs.access(PACKAGES_DIR);
     return true;

@@ -1,20 +1,20 @@
-# aistack
+# awesome-ai-stack
 
 > AI tooling package manager. Install MCP servers, memory layers, and AI skills in one command.
 
-**aistack** is a terminal UI that helps you browse, select, and install AI tools for your role — MCP servers, memory layers, and skills — then writes the right config for Claude Desktop, Cursor, or Windsurf.
+**awesome-ai-stack** is a terminal UI that helps you browse, select, and install AI tools for your role — MCP servers, memory layers, and skills — then writes the right config for Claude Desktop, Cursor, or Windsurf.
 
 ## Quick Start
 
 ```bash
-npx aistack
+npx awesome-ai-stack
 ```
 
 Or install globally:
 
 ```bash
-npm install -g aistack
-aistack
+npm install -g awesome-ai-stack
+awesome-ai-stack
 ```
 
 ## What it installs
@@ -44,14 +44,14 @@ aistack
 ## Development
 
 ```bash
-git clone https://github.com/aistack/aistack.git
-cd aistack
+git clone https://github.com/Ash310u/awesome-ai-stack.git
+cd awesome-ai-stack
 npm install
 npm run validate   # validate all registry JSON
 npm start          # launch TUI locally
 ```
 
-Set `AISTACK_USE_LOCAL=1` to force reading the local `packages/` and `roles/` directories.
+Set `AWESOME_AI_STACK_USE_LOCAL=1` to force reading the local `packages/` and `roles/` directories.
 
 ## Contributing
 

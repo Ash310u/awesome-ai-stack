@@ -24,7 +24,7 @@ export function RoleSelect({ roles, onSelect }) {
   return (
     <Box flexDirection="column">
       <Text bold color="cyan">
-        aistack — AI Tooling Package Manager
+        awesome-ai-stack — AI Tooling Package Manager
       </Text>
       <Text dimColor>What's your primary role?</Text>
       <Box marginTop={1}>

@@ -1,4 +1,4 @@
-# Contributing to aistack
+# Contributing to awesome-ai-stack
 
 Thank you for helping grow the AI tooling registry! Adding a new tool is intentionally simple: one JSON file and a pull request.
 
@@ -73,4 +73,4 @@ For CLI or TUI changes, keep edits focused and run `npm run validate` before pus
 
 ## Questions?
 
-Open a [GitHub issue](https://github.com/aistack/aistack/issues) with the `question` label.
+Open a [GitHub issue](https://github.com/Ash310u/awesome-ai-stack/issues) with the `question` label.

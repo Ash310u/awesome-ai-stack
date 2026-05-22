@@ -1,6 +1,6 @@
 {
   "name": "awesome-ai-stack",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "type": "module",
   "description": "A TUI-based package manager for your AI stack. Browse and install MCP servers, memory layers, skills, and agent tools — configured automatically. One command replaces hours of searching.",
   "bin": {

@@ -91,7 +91,7 @@ export const packageSchema = z
     z.object({ ...packageBaseSchema, type: z.literal('mcp'), ...mcpAgentFields }),
     z.object({ ...packageBaseSchema, type: z.literal('agent'), ...mcpAgentFields }),
     z.object({ ...packageBaseSchema, type: z.literal('skill'), ...skillFields }),
-    z.object({ ...packageBaseSchema, type: z.literal('memory'), ...contentToolFields }),
+    z.object({ ...packageBaseSchema, type: z.literal('memory'), ...mcpAgentFields }),
     z.object({ ...packageBaseSchema, type: z.literal('plugin'), ...contentToolFields }),
   ])
   .superRefine((data, ctx) => {
@@ -136,22 +136,29 @@ export function isClientLevelType(type) {
   return type === 'mcp' || type === 'agent';
 }
 
+/** Memory layers install via MCP / client config (not .aistack files). */
+export function isMemoryMcpType(type) {
+  return type === 'memory';
+}
+
+/** @param {object} pkg */
+export function needsClientTarget(pkg) {
+  return isClientLevelType(pkg.type) || isMemoryMcpType(pkg.type);
+}
+
 /** @param {string} type */
 export function isProjectLevelType(type) {
-  return type === 'skill' || type === 'memory' || type === 'plugin';
+  return type === 'skill' || type === 'plugin';
+}
+
+/** @param {object} pkg */
+export function isContentTool(pkg) {
+  return pkg.type === 'plugin' || (pkg.type === 'skill' && !pkg.skill_init);
 }
 
 /** @param {object} pkg */
 export function usesSkillInit(pkg) {
   return Boolean(pkg.skill_init);
-}
-
-/** @param {object} pkg */
-export function isContentTool(pkg) {
-  return (
-    (pkg.type === 'memory' || pkg.type === 'plugin' || pkg.type === 'skill') &&
-    !pkg.skill_init
-  );
 }
 
 /** @param {object[]} packages */

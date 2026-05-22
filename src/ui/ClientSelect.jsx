@@ -19,7 +19,7 @@ export function ClientSelect({ onSelect, onBack }) {
   return (
     <Box flexDirection="column">
       <Text bold>Which client should aas configure?</Text>
-      <Text dimColor>MCP servers and agents write to global client config</Text>
+      <Text dimColor>MCP servers, agents, and memory layers write to client config</Text>
       <Text dimColor>Esc to go back</Text>
       <Box marginTop={1}>
         <SelectInput items={CLIENTS} onSelect={(item) => onSelect(item.value)} />

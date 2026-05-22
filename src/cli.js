@@ -15,7 +15,7 @@ import { SuccessScreen } from './ui/SuccessScreen.jsx';
 import { collectRequiredSecrets } from './secrets.js';
 import { getConfigPath } from './config-writer.js';
 import {
-  isClientLevelType,
+  needsClientTarget,
   usesSkillInit,
   getSkillInitOptions,
 } from './schemas.js';
@@ -29,13 +29,13 @@ const CATEGORY_LABELS = {
 };
 
 function nextStepAfterSkillClient(chosen) {
-  if (chosen.some((p) => isClientLevelType(p.type))) return 'client';
+  if (chosen.some((p) => needsClientTarget(p))) return 'client';
   return 'confirm';
 }
 
 function nextStepAfterBrowse(chosen) {
   if (chosen.some((p) => usesSkillInit(p))) return 'skillClient';
-  if (chosen.some((p) => isClientLevelType(p.type))) return 'client';
+  if (chosen.some((p) => needsClientTarget(p))) return 'client';
   return 'confirm';
 }
 
@@ -214,7 +214,7 @@ function App() {
         apiKeys={apiKeys}
         onComplete={handleInstallComplete}
         onBack={() => {
-          if (selectedPackages.some((p) => isClientLevelType(p.type))) {
+          if (selectedPackages.some((p) => needsClientTarget(p))) {
             setStep(requiredSecrets.length > 0 ? 'apiKeys' : 'client');
           } else if (selectedPackages.some((p) => usesSkillInit(p))) {
             setStep('skillClient');

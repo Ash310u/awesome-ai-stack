@@ -19,8 +19,9 @@ export function ToolsSubMenu({ onSelect, onBack }) {
   return (
     <Box flexDirection="column">
       <Text bold>Tools</Text>
-      <Text dimColor>Skills install to IDE skills folders via uipro init</Text>
-      <Text dimColor>Memory/plugins install to .aistack/ in your cwd</Text>
+      <Text dimColor>Skills → uipro init into IDE skills folders</Text>
+      <Text dimColor>Memory → MCP client config (Claude / Cursor / Windsurf)</Text>
+      <Text dimColor>Plugins → .aistack/ in your cwd</Text>
       <Text dimColor>Esc to go back</Text>
       <Box marginTop={1}>
         <SelectInput

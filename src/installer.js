@@ -394,12 +394,12 @@ export async function installPackages(
     };
 
     let result;
-    if (pkg.type === 'mcp' || pkg.type === 'agent') {
+    if (pkg.type === 'mcp' || pkg.type === 'agent' || pkg.type === 'memory') {
       if (!clientTarget) {
         result = {
           id: pkg.id,
           success: false,
-          error: 'Client target required for MCP/agent packages',
+          error: 'Client target required for MCP/agent/memory packages',
         };
       } else {
         result = await installMCPOrAgent(pkg, clientTarget, apiKeys, onLog);

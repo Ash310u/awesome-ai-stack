@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Text, useInput } from 'ink';
-import { isClientLevelType, usesSkillInit } from '../schemas.js';
+import { needsClientTarget, usesSkillInit } from '../schemas.js';
 
 /**
  * Installation summary after success.
@@ -22,7 +22,7 @@ export function SuccessScreen({
   const skipped = result.installs.filter((r) => r.skipped);
   const warnings = result.installs.filter((r) => r.success && r.cliWarning);
   const failed = result.installs.filter((r) => !r.success);
-  const hasClientPackages = packages.some((p) => isClientLevelType(p.type));
+  const hasClientPackages = packages.some((p) => needsClientTarget(p));
   const hasSkillInit = packages.some((p) => usesSkillInit(p));
 
   return (
@@ -37,7 +37,10 @@ export function SuccessScreen({
           {succeeded.map((item) => {
             const pkg = packages.find((p) => p.id === item.id);
             let label = 'installed to project';
-            if (pkg && isClientLevelType(pkg.type)) label = 'configured';
+            if (pkg && needsClientTarget(pkg)) {
+              label =
+                pkg.type === 'memory' ? 'memory configured' : 'configured';
+            }
             else if (pkg && usesSkillInit(pkg)) {
               label = `project skills (${item.aiTarget})`;
             }
@@ -117,9 +120,19 @@ export function SuccessScreen({
         </Box>
       )}
 
+      {packages.some((p) => p.type === 'plugin') && (
+        <Box marginTop={1}>
+          <Text dimColor>
+            Plugins installed under {process.cwd()}/.aistack/
+          </Text>
+        </Box>
+      )}
+
       {hasClientPackages && clientTarget && (
         <Box marginTop={1}>
-          <Text color="yellow">Restart your AI client to activate MCP tools</Text>
+          <Text color="yellow">
+            Restart your AI client to activate MCP and memory tools
+          </Text>
         </Box>
       )}
 

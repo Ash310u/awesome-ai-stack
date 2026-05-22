@@ -74,18 +74,35 @@ Installs into IDE skills folders via `uipro init --ai <assistant>`:
 }
 ```
 
-### Memory / Plugin (project files in .aistack/)
+### Memory (MCP / client config — same shape as MCP)
 
 ```json
 {
-  "id": "my-memory",
-  "name": "My Memory",
+  "id": "mem0",
+  "name": "Mem0",
   "type": "memory",
   "description": "Short description",
-  "content": "Full markdown or config string",
-  "filename": "my-memory",
-  "extension": ".md",
+  "install": { "npx": "...", "npm": "..." },
+  "config_target": ["claude_desktop", "cursor", "windsurf"],
+  "config_snippet": {},
+  "mcp_add": { "name": "mem0-mcp", "type": "http", "url": "...", "clients": {} },
   "tags": ["memory"],
+  "verified": false
+}
+```
+
+### Plugin (project files in .aistack/)
+
+```json
+{
+  "id": "my-plugin",
+  "name": "My Plugin",
+  "type": "plugin",
+  "description": "Short description",
+  "content": "Full markdown or config string",
+  "filename": "my-plugin",
+  "extension": ".md",
+  "tags": ["plugin"],
   "verified": false
 }
 ```
@@ -94,7 +111,8 @@ Installs into IDE skills folders via `uipro init --ai <assistant>`:
 
 - **type** — `mcp`, `agent`, `skill`, `memory`, or `plugin`
 - **skill_init** — for skills installed via CLI init (IDE skills folders)
-- **content** / **filename** / **extension** — for memory/plugin project files
+- **memory** — uses `install`, `config_target`, `config_snippet` (not `.aistack/` markdown files)
+- **content** / **filename** / **extension** — for plugins only
 - **verified** — set to `true` only after a maintainer confirms install works
 
 ## Code changes

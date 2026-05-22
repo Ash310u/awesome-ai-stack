@@ -3,9 +3,19 @@
   "name": "Claude Mem",
   "type": "memory",
   "description": "Persistent memory layer that recalls context across Claude sessions",
-  "content": "# Claude Mem — Project Memory Config\n\nClaude Mem provides persistent memory across sessions.\n\n## Install\n\n```bash\nnpx -y claude-mem@latest\n```\n\n## Usage\n\nReference this file from your agent config. Claude Mem stores conversation context and user preferences locally.\n\n## Recommended settings\n\n- Enable auto-recall for project-specific facts\n- Scope memory to this repository\n- Review stored memories periodically\n\nDocs: https://github.com/thedotmack/claude-mem\n",
-  "filename": "claude-mem",
-  "extension": ".md",
+  "install": {
+    "npx": "npx -y claude-mem@latest",
+    "npm": "npm install -g claude-mem"
+  },
+  "config_target": ["claude_desktop", "cursor", "windsurf"],
+  "config_snippet": {
+    "mcpServers": {
+      "claude-mem": {
+        "command": "npx",
+        "args": ["-y", "claude-mem@latest"]
+      }
+    }
+  },
   "tags": ["developer", "researcher", "memory"],
   "docs_url": "https://github.com/thedotmack/claude-mem",
   "verified": true

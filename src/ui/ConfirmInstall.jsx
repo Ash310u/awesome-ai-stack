@@ -3,7 +3,7 @@ import { Box, Text, useInput } from 'ink';
 import Spinner from 'ink-spinner';
 import { getConfigPath } from '../config-writer.js';
 import { installPackages } from '../installer.js';
-import { isClientLevelType, usesSkillInit } from '../schemas.js';
+import { needsClientTarget, usesSkillInit } from '../schemas.js';
 
 /**
  * Overwrite prompt shown during tool install.
@@ -82,17 +82,20 @@ export function ConfirmInstall({
   const [overwritePrompt, setOverwritePrompt] = useState(null);
   const [permissionPrompt, setPermissionPrompt] = useState(null);
 
-  const needsClient = packages.some((p) => isClientLevelType(p.type));
+  const needsClient = packages.some((p) => needsClientTarget(p));
   const hasSkillInit = packages.some((p) => usesSkillInit(p));
+  const hasPlugins = packages.some((p) => p.type === 'plugin');
   const configPath = clientTarget ? getConfigPath(clientTarget) : null;
 
-  let targetLabel = `Project: ${process.cwd()}/.aistack/`;
+  let targetLabel = '';
   if (needsClient && hasSkillInit) {
     targetLabel = `${configPath ?? clientTarget} + uipro init --ai ${skillAiTarget}`;
   } else if (needsClient) {
     targetLabel = configPath ?? clientTarget;
   } else if (hasSkillInit) {
     targetLabel = `uipro init --ai ${skillAiTarget} (this project)`;
+  } else if (hasPlugins) {
+    targetLabel = `Project: ${process.cwd()}/.aistack/`;
   }
 
   useInput((input, key) => {

@@ -47,9 +47,13 @@ uipro init --ai cursor              # project skills folder
 
 Supported assistants include: Claude, Cursor, Windsurf, Codex, Copilot, Gemini, Continue, and more — or `all`.
 
-### Memory / Plugins (project-level)
+### Memory (client-level MCP)
 
-Installed into `.aistack/` in your current working directory.
+Mem0, Claude Mem, and Zep install like MCP servers — config goes to Claude Desktop, Cursor, or Windsurf. API keys are prompted when needed.
+
+### Plugins (project-level)
+
+Plugins install into `.aistack/plugins/` in your current working directory.
 
 ## Development
 

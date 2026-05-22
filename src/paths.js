@@ -47,3 +47,19 @@ export function getConfigPath(target) {
   if (!paths) return null;
   return paths[platform] ?? paths.linux;
 }
+
+/** @typedef {import('./schemas.js').ClientTarget} ClientTarget */
+
+const IDE_SKILL_PATHS = {
+  claude_desktop: path.join(os.homedir(), '.claude', 'skills'),
+  cursor: path.join(os.homedir(), '.cursor', 'skills'),
+  windsurf: path.join(os.homedir(), '.codeium', 'windsurf', 'skills'),
+};
+
+/**
+ * @param {ClientTarget} target
+ * @returns {string | null}
+ */
+export function getIdeSkillPath(target) {
+  return IDE_SKILL_PATHS[target] ?? null;
+}

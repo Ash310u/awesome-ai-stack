@@ -1,7 +1,7 @@
 {
   "id": "browseruse",
   "name": "Browser Use",
-  "category": "mcp",
+  "type": "mcp",
   "description": "Automate browser tasks — navigate, click, scrape, and fill forms",
   "install": {
     "npx": "npx -y @browserbasehq/mcp-server-browserbase@latest",

@@ -1,35 +1,46 @@
 import React from 'react';
 import { Box, Text, useInput } from 'ink';
+import { isClientLevelType, usesSkillInit } from '../schemas.js';
 
 /**
- * Step 5 — installation summary and next steps.
+ * Installation summary after success.
  */
-export function SuccessScreen({ result, packages, onExit }) {
+export function SuccessScreen({
+  result,
+  packages,
+  clientTarget,
+  skillAiTarget,
+  onExit,
+}) {
   useInput((input, key) => {
     if (key.return || input === 'q') {
       onExit?.();
     }
   });
 
-  const succeeded = result.installs.filter((r) => r.success);
+  const succeeded = result.installs.filter((r) => r.success && !r.skipped);
+  const skipped = result.installs.filter((r) => r.skipped);
+  const warnings = result.installs.filter((r) => r.success && r.cliWarning);
   const failed = result.installs.filter((r) => !r.success);
+  const hasClientPackages = packages.some((p) => isClientLevelType(p.type));
+  const hasSkillInit = packages.some((p) => usesSkillInit(p));
 
   return (
     <Box flexDirection="column">
       <Text bold color="green">
-        Setup complete
+        awesome-ai-stack setup complete
       </Text>
 
       {succeeded.length > 0 && (
         <Box marginTop={1} flexDirection="column">
-          <Text bold>Installed tools</Text>
+          <Text bold>Installed</Text>
           {succeeded.map((item) => {
             const pkg = packages.find((p) => p.id === item.id);
-            const label = item.mcpAdd
-              ? 'added via mcp-add'
-              : item.configOnly
-                ? 'configured'
-                : 'installed';
+            let label = 'installed to project';
+            if (pkg && isClientLevelType(pkg.type)) label = 'configured';
+            else if (pkg && usesSkillInit(pkg)) {
+              label = `project skills (${item.aiTarget})`;
+            }
             return (
               <Text key={item.id}>
                 ✓ {item.name ?? pkg?.name ?? item.id}{' '}
@@ -37,6 +48,32 @@ export function SuccessScreen({ result, packages, onExit }) {
               </Text>
             );
           })}
+        </Box>
+      )}
+
+      {skipped.length > 0 && (
+        <Box marginTop={1} flexDirection="column">
+          <Text bold color="yellow">
+            Skipped
+          </Text>
+          {skipped.map((item) => (
+            <Text key={item.id} color="yellow">
+              ⏭ {item.name ?? item.id}
+            </Text>
+          ))}
+        </Box>
+      )}
+
+      {warnings.length > 0 && (
+        <Box marginTop={1} flexDirection="column">
+          <Text bold color="yellow">
+            Warnings
+          </Text>
+          {warnings.map((item) => (
+            <Text key={item.id} color="yellow">
+              ⚠ {item.name ?? item.id}: CLI install used fallback (npx/local)
+            </Text>
+          ))}
         </Box>
       )}
 
@@ -54,24 +91,44 @@ export function SuccessScreen({ result, packages, onExit }) {
         </Box>
       )}
 
-      {result.configWritten && result.configPath && (
+      {result.logs?.length > 0 && (
         <Box marginTop={1} flexDirection="column">
-          <Text bold>Config updated</Text>
-          <Text>{result.configPath}</Text>
+          <Text bold>Details</Text>
+          {result.logs.map((line, index) => (
+            <Text key={`${index}-${line}`}>{line}</Text>
+          ))}
         </Box>
       )}
 
-      <Box marginTop={1}>
-        <Text color="yellow">Restart your AI client to activate tools</Text>
-      </Box>
+      {result.configWritten && result.configPaths?.length > 0 && (
+        <Box marginTop={1} flexDirection="column">
+          <Text bold>Client config updated</Text>
+          {result.configPaths.map((configPath) => (
+            <Text key={configPath}>{configPath}</Text>
+          ))}
+        </Box>
+      )}
+
+      {hasSkillInit && skillAiTarget && (
+        <Box marginTop={1}>
+          <Text dimColor>
+            Skill installed via uipro init --ai {skillAiTarget} in {process.cwd()}
+          </Text>
+        </Box>
+      )}
+
+      {hasClientPackages && clientTarget && (
+        <Box marginTop={1}>
+          <Text color="yellow">Restart your AI client to activate MCP tools</Text>
+        </Box>
+      )}
 
       <Box marginTop={1} flexDirection="column">
         <Text bold>Documentation</Text>
-        {succeeded.map((item) => {
-          const pkg = packages.find((p) => p.id === item.id);
-          if (!pkg?.docs_url) return null;
+        {packages.map((pkg) => {
+          if (!pkg.docs_url) return null;
           return (
-            <Text key={item.id}>
+            <Text key={pkg.id}>
               {pkg.name}: {pkg.docs_url}
             </Text>
           );

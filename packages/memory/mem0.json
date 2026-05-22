@@ -1,28 +1,11 @@
 {
   "id": "mem0",
   "name": "Mem0",
-  "category": "memory",
+  "type": "memory",
   "description": "Self-improving memory for AI agents — store and retrieve user preferences",
-  "install": {
-    "npx": "npx -y mcp-add@latest",
-    "npm": "npm install -g mcp-add"
-  },
-  "mcp_add": {
-    "name": "mem0-mcp",
-    "type": "http", 
-    "url": "https://mcp.mem0.ai/mcp",
-    "scope": "global",
-    "env_key": "MEM0_API_KEY",
-    "auth_header": "Authorization",
-    "auth_prefix": "Token ",
-    "clients": {
-      "claude_desktop": "claude",
-      "cursor": "cursor",
-      "windsurf": "windsurf"
-    }
-  },
-  "config_target": ["claude_desktop", "cursor", "windsurf"],
-  "config_snippet": {},
+  "content": "# Mem0 — Project Memory Config\n\nMem0 adds self-improving memory to AI agents.\n\n## Setup\n\n1. Create an account at https://mem0.ai\n2. Generate an API key\n3. Configure your agent to use Mem0 MCP or SDK\n\n## Environment\n\n```\nMEM0_API_KEY=your_key_here\n```\n\n## MCP endpoint\n\n```\nhttps://mcp.mem0.ai/mcp\n```\n\nDocs: https://docs.mem0.ai/platform/mem0-mcp\n",
+  "filename": "mem0",
+  "extension": ".md",
   "tags": ["developer", "researcher", "memory"],
   "docs_url": "https://docs.mem0.ai/platform/mem0-mcp",
   "verified": true

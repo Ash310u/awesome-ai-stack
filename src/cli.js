@@ -3,34 +3,54 @@
 import React, { useEffect, useState } from 'react';
 import { render, Box, Text } from 'ink';
 import Spinner from 'ink-spinner';
-import {
-  initRegistry,
-  getAllRoles,
-  getAllPackages,
-  getPackagesByRole,
-} from './registry.js';
-import { RoleSelect } from './ui/RoleSelect.jsx';
-import { PackageList } from './ui/PackageList.jsx';
-import { TargetSelect } from './ui/TargetSelect.jsx';
+import { initRegistry, getPackagesByType } from './registry.js';
+import { CategorySelect } from './ui/CategorySelect.jsx';
+import { ToolsSubMenu } from './ui/ToolsSubMenu.jsx';
+import { BrowseScreen } from './ui/BrowseScreen.jsx';
+import { ClientSelect } from './ui/ClientSelect.jsx';
+import { SkillClientSelect } from './ui/SkillClientSelect.jsx';
 import { ApiKeyPrompt } from './ui/ApiKeyPrompt.jsx';
 import { ConfirmInstall } from './ui/ConfirmInstall.jsx';
 import { SuccessScreen } from './ui/SuccessScreen.jsx';
 import { collectRequiredSecrets } from './secrets.js';
 import { getConfigPath } from './config-writer.js';
+import {
+  isClientLevelType,
+  usesSkillInit,
+  getSkillInitOptions,
+} from './schemas.js';
+
+const CATEGORY_LABELS = {
+  mcp: 'MCP Servers',
+  agent: 'Agents',
+  skill: 'Skills',
+  memory: 'Memory',
+  plugin: 'Plugins & Extensions',
+};
+
+function nextStepAfterSkillClient(chosen) {
+  if (chosen.some((p) => isClientLevelType(p.type))) return 'client';
+  return 'confirm';
+}
+
+function nextStepAfterBrowse(chosen) {
+  if (chosen.some((p) => usesSkillInit(p))) return 'skillClient';
+  if (chosen.some((p) => isClientLevelType(p.type))) return 'client';
+  return 'confirm';
+}
 
 /**
- * Root TUI — orchestrates the five-step install flow.
+ * Root TUI — category → browse → skill client or MCP client → confirm.
  */
 function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [roles, setRoles] = useState([]);
-  const [step, setStep] = useState('role');
-  const [roleId, setRoleId] = useState(null);
-  const [roleLabel, setRoleLabel] = useState(null);
+  const [step, setStep] = useState('category');
+  const [browseType, setBrowseType] = useState(null);
   const [packages, setPackages] = useState([]);
   const [selectedPackages, setSelectedPackages] = useState([]);
-  const [target, setTarget] = useState(null);
+  const [clientTarget, setClientTarget] = useState(null);
+  const [skillAiTarget, setSkillAiTarget] = useState(null);
   const [requiredSecrets, setRequiredSecrets] = useState([]);
   const [apiKeys, setApiKeys] = useState({});
   const [installResult, setInstallResult] = useState(null);
@@ -39,7 +59,6 @@ function App() {
     (async () => {
       try {
         await initRegistry();
-        setRoles(await getAllRoles());
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
       } finally {
@@ -48,26 +67,38 @@ function App() {
     })();
   }, []);
 
-  async function handleRoleSelect(id) {
-    setRoleId(id);
-    if (id === null) {
-      setRoleLabel(null);
-      setPackages(await getAllPackages());
-    } else {
-      const role = roles.find((r) => r.id === id);
-      setRoleLabel(role?.label ?? id);
-      setPackages(await getPackagesByRole(id));
+  async function loadPackagesForType(type) {
+    setBrowseType(type);
+    setPackages(await getPackagesByType(type));
+    setStep('browse');
+  }
+
+  function handleCategorySelect(value) {
+    if (value === 'tools') {
+      setStep('toolsSub');
+      return;
     }
-    setStep('packages');
+    loadPackagesForType(value);
+  }
+
+  function handleToolsSubSelect(type) {
+    loadPackagesForType(type);
   }
 
   function handlePackageConfirm(chosen) {
     setSelectedPackages(chosen);
-    setStep('target');
+    setSkillAiTarget(null);
+    setClientTarget(null);
+    setStep(nextStepAfterBrowse(chosen));
   }
 
-  async function handleTargetSelect(value) {
-    setTarget(value);
+  function handleSkillClientSelect(value) {
+    setSkillAiTarget(value);
+    setStep(nextStepAfterSkillClient(selectedPackages));
+  }
+
+  async function handleClientSelect(value) {
+    setClientTarget(value);
     setApiKeys({});
 
     const needed = await collectRequiredSecrets(selectedPackages, value);
@@ -85,10 +116,22 @@ function App() {
     setStep('success');
   }
 
+  function handleBackFromBrowse() {
+    if (browseType === 'skill' || browseType === 'memory' || browseType === 'plugin') {
+      setStep('toolsSub');
+    } else {
+      setStep('category');
+    }
+    setBrowseType(null);
+    setPackages([]);
+  }
+
+  const skillOptions = getSkillInitOptions(selectedPackages);
+
   if (loading) {
     return (
       <Text color="cyan">
-        <Spinner type="dots" /> Loading registry…
+        <Spinner type="dots" /> Loading awesome-ai-stack registry…
       </Text>
     );
   }
@@ -101,38 +144,63 @@ function App() {
     );
   }
 
-  if (step === 'role') {
-    return <RoleSelect roles={roles} onSelect={handleRoleSelect} />;
+  if (step === 'category') {
+    return <CategorySelect onSelect={handleCategorySelect} />;
   }
 
-  if (step === 'packages') {
+  if (step === 'toolsSub') {
     return (
-      <PackageList
-        packages={packages}
-        roleLabel={roleLabel}
-        onConfirm={handlePackageConfirm}
-        onBack={() => setStep('role')}
+      <ToolsSubMenu
+        onSelect={handleToolsSubSelect}
+        onBack={() => setStep('category')}
       />
     );
   }
 
-  if (step === 'target') {
+  if (step === 'browse') {
     return (
-      <TargetSelect
-        onSelect={handleTargetSelect}
-        onBack={() => setStep('packages')}
+      <BrowseScreen
+        packages={packages}
+        categoryLabel={CATEGORY_LABELS[browseType] ?? browseType}
+        onConfirm={handlePackageConfirm}
+        onBack={handleBackFromBrowse}
+      />
+    );
+  }
+
+  if (step === 'skillClient') {
+    return (
+      <SkillClientSelect
+        options={skillOptions}
+        onSelect={handleSkillClientSelect}
+        onBack={() => setStep('browse')}
+      />
+    );
+  }
+
+  if (step === 'client') {
+    return (
+      <ClientSelect
+        onSelect={handleClientSelect}
+        onBack={() =>
+          setStep(
+            selectedPackages.some((p) => usesSkillInit(p))
+              ? 'skillClient'
+              : 'browse',
+          )
+        }
       />
     );
   }
 
   if (step === 'apiKeys') {
-    const configPath = getConfigPath(target);
+    const configPath = getConfigPath(clientTarget);
     return (
       <ApiKeyPrompt
         requiredSecrets={requiredSecrets}
-        targetLabel={configPath ?? target}
+        targetLabel={configPath ?? clientTarget}
         onComplete={handleApiKeysComplete}
-        onBack={() => setStep('target')}
+        onBack={() => setStep('client')}
       />
     );
   }
@@ -141,12 +209,19 @@ function App() {
     return (
       <ConfirmInstall
         packages={selectedPackages}
-        target={target}
+        clientTarget={clientTarget}
+        skillAiTarget={skillAiTarget}
         apiKeys={apiKeys}
         onComplete={handleInstallComplete}
-        onBack={() =>
-          setStep(requiredSecrets.length > 0 ? 'apiKeys' : 'target')
-        }
+        onBack={() => {
+          if (selectedPackages.some((p) => isClientLevelType(p.type))) {
+            setStep(requiredSecrets.length > 0 ? 'apiKeys' : 'client');
+          } else if (selectedPackages.some((p) => usesSkillInit(p))) {
+            setStep('skillClient');
+          } else {
+            setStep('browse');
+          }
+        }}
       />
     );
   }
@@ -156,6 +231,8 @@ function App() {
       <SuccessScreen
         result={installResult}
         packages={selectedPackages}
+        clientTarget={clientTarget}
+        skillAiTarget={skillAiTarget}
         onExit={() => process.exit(0)}
       />
     );

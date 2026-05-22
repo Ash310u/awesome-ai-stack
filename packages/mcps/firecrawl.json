@@ -1,7 +1,7 @@
 {
   "id": "firecrawl",
   "name": "Firecrawl",
-  "category": "mcp",
+  "type": "mcp",
   "description": "Crawl and scrape websites into clean markdown for LLM context",
   "install": {
     "npx": "npx -y firecrawl-mcp@latest",

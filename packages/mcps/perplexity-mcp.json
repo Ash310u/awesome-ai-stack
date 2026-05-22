@@ -1,7 +1,7 @@
 {
   "id": "perplexity-mcp",
   "name": "Perplexity MCP",
-  "category": "mcp",
+  "type": "mcp",
   "description": "Real-time web search and answers powered by Perplexity",
   "install": {
     "npx": "npx -y @perplexity-ai/mcp-server@latest",

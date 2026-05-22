@@ -1,8 +1,8 @@
 # awesome-ai-stack
 
-> AI tooling package manager. Install MCP servers, memory layers, and AI skills in one command.
+> A TUI-based package manager for your AI stack. Browse and install MCP servers, memory layers, skills, and agent tools — configured automatically.
 
-**awesome-ai-stack** is a terminal UI that helps you browse, select, and install AI tools for your role — MCP servers, memory layers, and skills — then writes the right config for Claude Desktop, Cursor, or Windsurf.
+**awesome-ai-stack** (`aas`) helps you browse, select, and install AI tools — MCP servers, agents, skills, memory layers, and plugins.
 
 ## Quick Start
 
@@ -10,29 +10,46 @@
 npx awesome-ai-stack
 ```
 
-## What it installs
+Or install globally (command: `aas`):
 
-- **MCP Servers** — Context7, Browser Use, Firecrawl, GitHub MCP, Perplexity MCP
-- **Memory layers** — Claude Mem, Mem0, Zep Memory
-- **Skills** — UIUX ProMax
+```bash
+npm install -g awesome-ai-stack
+aas
+```
 
-## How it works
+## Menu flow
 
-1. Pick your role (Developer, Marketer, Researcher, Designer) or browse all tools
-2. Multi-select packages with checkboxes
-3. Choose where to write config (Claude Desktop, Cursor, Windsurf, or install-only)
-4. Confirm and install — MCP servers are config-only (`npx` from client config); memory and skills run `npx`/`npm` install
-5. Config snippets are deep-merged into your client config (existing keys are never overwritten)
+1. **MCP Servers** / **Agents** / **Tools**
+2. Tools → **Skills** / **Memory** / **Plugins & Extensions**
+3. Browse with search, multi-select, and tag-based suggestions
+4. Skills (e.g. UIUX ProMax) → pick AI assistant
+5. MCP/Agent → pick client (Claude Desktop, Cursor, Windsurf)
+6. Confirm and install
 
-## Supported targets
+## Install behavior
 
-| Target         | Config path |
-|----------------|-------------|
-| Claude Desktop | macOS: `~/Library/Application Support/Claude/claude_desktop_config.json` |
-|                | Linux: `~/.config/Claude/claude_desktop_config.json` |
-|                | Windows: `%APPDATA%\Claude\claude_desktop_config.json` |
-| Cursor         | `~/.cursor/mcp.json` |
-| Windsurf       | `~/.codeium/windsurf/mcp_config.json` |
+### MCP Servers & Agents (client-level)
+
+- Installed via `npx`/`npm`
+- Config written to your AI client config file (Claude Desktop, Cursor, Windsurf)
+
+### Skills (IDE skills folders via uipro-cli)
+
+Skills like **UIUX ProMax** use [uipro-cli](https://www.npmjs.com/package/uipro-cli):
+
+```bash
+npm install -g uipro-cli
+cd /path/to/your/project
+uipro init --ai cursor              # project skills folder
+```
+
+`aas` runs these steps for you after you pick the assistant (always installs to the current project).
+
+Supported assistants include: Claude, Cursor, Windsurf, Codex, Copilot, Gemini, Continue, and more — or `all`.
+
+### Memory / Plugins (project-level)
+
+Installed into `.aistack/` in your current working directory.
 
 ## Development
 
@@ -40,15 +57,15 @@ npx awesome-ai-stack
 git clone https://github.com/Ash310u/awesome-ai-stack.git
 cd awesome-ai-stack
 npm install
-npm run validate   # validate all registry JSON
-npm start          # launch TUI locally
+npm run validate
+npm start
 ```
 
-Set `AWESOME_AI_STACK_USE_LOCAL=1` to force reading the local `packages/` and `roles/` directories.
+Set `AWESOME_AI_STACK_USE_LOCAL=1` to force reading local `packages/`.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) — adding a tool is just adding a JSON file.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

@@ -3,13 +3,74 @@ import { Box, Text, useInput } from 'ink';
 import Spinner from 'ink-spinner';
 import { getConfigPath } from '../config-writer.js';
 import { installPackages } from '../installer.js';
+import { isClientLevelType, usesSkillInit } from '../schemas.js';
 
 /**
- * Step 4 — confirm, install with per-package spinners, then advance.
+ * Overwrite prompt shown during tool install.
+ */
+function OverwritePrompt({ filename, onAnswer }) {
+  useInput((input, key) => {
+    if (key.escape) {
+      onAnswer(false);
+      return;
+    }
+    const answer = input.toLowerCase();
+    if (answer === 'y') onAnswer(true);
+    else if (answer === 'n') onAnswer(false);
+  });
+
+  return (
+    <Box flexDirection="column" marginTop={1}>
+      <Text color="yellow">
+        {filename} already installed. Overwrite? (Y/N)
+      </Text>
+    </Box>
+  );
+}
+
+/**
+ * Permission prompt when global npm install fails.
+ */
+function PermissionPrompt({ request, onAnswer }) {
+  useInput((input, key) => {
+    if (key.escape) {
+      onAnswer('cancel');
+      return;
+    }
+    const answer = input.toLowerCase();
+    if (answer === 'y') onAnswer('local');
+    else if (answer === 'n') onAnswer('skip');
+  });
+
+  return (
+    <Box flexDirection="column" marginTop={1}>
+      <Text bold color="yellow">
+        Permission required — {request.packageName}
+      </Text>
+      <Text dimColor>{request.reason}</Text>
+      <Text dimColor>Command: {request.command}</Text>
+      <Box marginTop={1} flexDirection="column">
+        <Text>
+          <Text bold color="green">Y</Text> Install locally to .aistack/node_modules/
+        </Text>
+        <Text>
+          <Text bold color="yellow">N</Text> Skip CLI install, continue with skill files
+        </Text>
+        <Text>
+          <Text bold color="red">Esc</Text> Cancel install
+        </Text>
+      </Box>
+    </Box>
+  );
+}
+
+/**
+ * Confirm and run install with per-package progress.
  */
 export function ConfirmInstall({
   packages,
-  target,
+  clientTarget,
+  skillAiTarget,
   apiKeys = {},
   onComplete,
   onBack,
@@ -17,15 +78,25 @@ export function ConfirmInstall({
   const [phase, setPhase] = useState('confirm');
   const [currentId, setCurrentId] = useState(null);
   const [completed, setCompleted] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [overwritePrompt, setOverwritePrompt] = useState(null);
+  const [permissionPrompt, setPermissionPrompt] = useState(null);
 
-  const configPath = getConfigPath(target);
-  const targetLabel =
-    target === 'skip'
-      ? 'Install only (no config file)'
-      : configPath ?? target;
+  const needsClient = packages.some((p) => isClientLevelType(p.type));
+  const hasSkillInit = packages.some((p) => usesSkillInit(p));
+  const configPath = clientTarget ? getConfigPath(clientTarget) : null;
+
+  let targetLabel = `Project: ${process.cwd()}/.aistack/`;
+  if (needsClient && hasSkillInit) {
+    targetLabel = `${configPath ?? clientTarget} + uipro init --ai ${skillAiTarget}`;
+  } else if (needsClient) {
+    targetLabel = configPath ?? clientTarget;
+  } else if (hasSkillInit) {
+    targetLabel = `uipro init --ai ${skillAiTarget} (this project)`;
+  }
 
   useInput((input, key) => {
-    if (phase !== 'confirm') return;
+    if (phase !== 'confirm' || overwritePrompt || permissionPrompt) return;
     if (key.escape) {
       onBack?.();
       return;
@@ -40,19 +111,35 @@ export function ConfirmInstall({
   });
 
   async function runInstall() {
+    const promptOverwrite = (filename) =>
+      new Promise((resolve) => {
+        setOverwritePrompt({ filename, resolve });
+      });
+
+    const promptInstallFallback = (request) =>
+      new Promise((resolve) => {
+        setPermissionPrompt({ request, resolve });
+      });
+
     const result = await installPackages(
       packages,
-      target,
+      clientTarget,
+      skillAiTarget,
       (event) => {
-      if (event.type === 'installing' && event.packageId) {
-        setCurrentId(event.packageId);
-      }
-      if (event.type === 'installed' || event.type === 'failed') {
-        setCompleted((prev) => [...prev, event.packageId]);
-        setCurrentId(null);
-      }
+        if (event.type === 'installing' && event.packageId) {
+          setCurrentId(event.packageId);
+        }
+        if (event.type === 'log' && event.message) {
+          setLogs((prev) => [...prev, event.message]);
+        }
+        if (event.type === 'installed' || event.type === 'failed') {
+          setCompleted((prev) => [...prev, event.packageId]);
+          setCurrentId(null);
+        }
       },
       apiKeys,
+      promptOverwrite,
+      promptInstallFallback,
     );
 
     onComplete(result);
@@ -62,18 +149,48 @@ export function ConfirmInstall({
     (pkgKeys) => Object.keys(pkgKeys).length > 0,
   );
 
+  if (permissionPrompt) {
+    return (
+      <Box flexDirection="column">
+        <Text bold>Installing…</Text>
+        <PermissionPrompt
+          request={permissionPrompt.request}
+          onAnswer={(answer) => {
+            permissionPrompt.resolve(answer);
+            setPermissionPrompt(null);
+          }}
+        />
+      </Box>
+    );
+  }
+
+  if (overwritePrompt) {
+    return (
+      <Box flexDirection="column">
+        <Text bold>Installing…</Text>
+        <OverwritePrompt
+          filename={overwritePrompt.filename}
+          onAnswer={(answer) => {
+            overwritePrompt.resolve(answer);
+            setOverwritePrompt(null);
+          }}
+        />
+      </Box>
+    );
+  }
+
   if (phase === 'confirm') {
     return (
       <Box flexDirection="column">
-        <Text bold>Confirm setup</Text>
-        <Text dimColor>Config target: {targetLabel}</Text>
+        <Text bold>Confirm install</Text>
+        <Text dimColor>Target: {targetLabel}</Text>
         {keysConfigured && (
           <Text dimColor>API keys will be written to your IDE config</Text>
         )}
         <Box marginTop={1} flexDirection="column">
           {packages.map((pkg) => (
             <Text key={pkg.id}>
-              • {pkg.name} <Text dimColor>[{pkg.category}]</Text>
+              • {pkg.name} <Text dimColor>[{pkg.type}]</Text>
             </Text>
           ))}
         </Box>
@@ -108,6 +225,15 @@ export function ConfirmInstall({
           </Box>
         );
       })}
+      {logs.length > 0 && (
+        <Box marginTop={1} flexDirection="column">
+          {logs.slice(-8).map((line, index) => (
+            <Text key={`${index}-${line}`} dimColor>
+              {line}
+            </Text>
+          ))}
+        </Box>
+      )}
     </Box>
   );
 }

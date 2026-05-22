@@ -1,7 +1,7 @@
 {
   "id": "github-mcp",
   "name": "GitHub MCP",
-  "category": "mcp",
+  "type": "mcp",
   "description": "Manage repos, issues, PRs, and code search from your AI client",
   "install": {
     "npx": "npx -y @modelcontextprotocol/server-github@latest",

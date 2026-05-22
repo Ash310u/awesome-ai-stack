@@ -2,12 +2,11 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
-import { packageSchema, roleSchema } from './schemas.js';
+import { packageSchema } from './schemas.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const PACKAGES_DIR = path.join(ROOT, 'packages');
-const ROLES_DIR = path.join(ROOT, 'roles');
 
 const REGISTRY_BASE =
   process.env.AWESOME_AI_STACK_REGISTRY_URL ??
@@ -16,7 +15,6 @@ const REGISTRY_BASE =
 const CACHE_DIR = path.join(os.homedir(), '.cache', 'awesome-ai-stack');
 
 let packagesCache = null;
-let rolesCache = null;
 
 /** @returns {Promise<boolean>} */
 async function useLocalRegistry() {
@@ -53,11 +51,10 @@ async function readJsonFiles(dir) {
 
 /**
  * Fetch remote registry JSON with filesystem cache fallback.
- * @param {'packages' | 'roles'} kind
  */
-async function fetchRemoteRegistry(kind) {
-  const cachePath = path.join(CACHE_DIR, `${kind}.json`);
-  const baseUrl = `${REGISTRY_BASE}/${kind}/`;
+async function fetchRemoteRegistry() {
+  const cachePath = path.join(CACHE_DIR, 'packages.json');
+  const baseUrl = `${REGISTRY_BASE}/packages/`;
 
   try {
     const indexRes = await fetch(`${baseUrl}index.json`, {
@@ -106,7 +103,7 @@ async function loadPackages() {
   if (hasLocal) {
     raw = await readJsonFiles(PACKAGES_DIR);
   } else {
-    raw = await fetchRemoteRegistry('packages');
+    raw = await fetchRemoteRegistry();
     if (!raw) {
       raw = await readJsonFiles(PACKAGES_DIR).catch(() => []);
     }
@@ -116,48 +113,9 @@ async function loadPackages() {
   return packagesCache;
 }
 
-/**
- * Load and validate all roles.
- * @returns {Promise<object[]>}
- */
-async function loadRoles() {
-  if (rolesCache) return rolesCache;
-
-  const hasLocal = await useLocalRegistry();
-  let raw = null;
-
-  if (hasLocal) {
-    const files = await fs.readdir(ROLES_DIR);
-    raw = await Promise.all(
-      files
-        .filter((f) => f.endsWith('.json'))
-        .map(async (f) => {
-          const content = await fs.readFile(path.join(ROLES_DIR, f), 'utf8');
-          return JSON.parse(content);
-        }),
-    );
-  } else {
-    raw = await fetchRemoteRegistry('roles');
-    if (!raw) {
-      const files = await fs.readdir(ROLES_DIR).catch(() => []);
-      raw = await Promise.all(
-        files
-          .filter((f) => f.endsWith('.json'))
-          .map(async (f) => {
-            const content = await fs.readFile(path.join(ROLES_DIR, f), 'utf8');
-            return JSON.parse(content);
-          }),
-      );
-    }
-  }
-
-  rolesCache = raw.map((item) => roleSchema.parse(item));
-  return rolesCache;
-}
-
 /** Initialize registry (call once at startup). */
 export async function initRegistry() {
-  await Promise.all([loadPackages(), loadRoles()]);
+  await loadPackages();
 }
 
 /** @returns {Promise<object[]>} */
@@ -165,29 +123,24 @@ export async function getAllPackages() {
   return loadPackages();
 }
 
-/** @returns {Promise<object[]>} */
-export async function getAllRoles() {
-  return loadRoles();
-}
-
-/**
- * @param {string} roleId
- * @returns {Promise<object[]>}
- */
-export async function getPackagesByRole(roleId) {
-  const [roles, packages] = await Promise.all([loadRoles(), loadPackages()]);
-  const role = roles.find((r) => r.id === roleId);
-  if (!role) return [];
-
-  const idSet = new Set(role.packages);
-  return packages.filter((p) => idSet.has(p.id));
-}
-
-/**
- * @param {string} id
- * @returns {Promise<object | undefined>}
- */
+/** @returns {Promise<object | undefined>} */
 export async function getPackageById(id) {
   const packages = await loadPackages();
   return packages.find((p) => p.id === id);
+}
+
+/** @returns {Promise<object[]>} */
+export async function getPackagesByType(type) {
+  const packages = await loadPackages();
+  return packages.filter((p) => p.type === type);
+}
+
+/**
+ * @param {string[]} types
+ * @returns {Promise<object[]>}
+ */
+export async function getPackagesByTypes(types) {
+  const packages = await loadPackages();
+  const typeSet = new Set(types);
+  return packages.filter((p) => typeSet.has(p.type));
 }

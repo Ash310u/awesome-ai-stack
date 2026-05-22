@@ -1,6 +1,0 @@
-{
-  "id": "marketer",
-  "label": "Marketer / Growth",
-  "description": "Search, scraping, and memory tools",
-  "packages": ["firecrawl", "perplexity-mcp", "mem0"]
-}

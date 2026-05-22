@@ -3,7 +3,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { packageSchema, roleSchema } from '../src/schemas.js';
+import { packageSchema } from '../src/schemas.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -52,37 +52,12 @@ async function validateFile(filePath, schema) {
 
 async function main() {
   const packageFiles = await collectJsonFiles(path.join(ROOT, 'packages'));
-  const roleFiles = (await fs.readdir(path.join(ROOT, 'roles')))
-    .filter((f) => f.endsWith('.json'))
-    .map((f) => path.join(ROOT, 'roles', f));
 
   let failed = 0;
 
   console.log('Validating packages…');
   for (const file of packageFiles) {
     if (!(await validateFile(file, packageSchema))) failed += 1;
-  }
-
-  console.log('\nValidating roles…');
-  for (const file of roleFiles) {
-    if (!(await validateFile(file, roleSchema))) failed += 1;
-  }
-
-  const knownIds = new Set();
-  for (const file of packageFiles) {
-    const data = JSON.parse(await fs.readFile(file, 'utf8'));
-    knownIds.add(data.id);
-  }
-
-  for (const file of roleFiles) {
-    const role = JSON.parse(await fs.readFile(file, 'utf8'));
-    const relative = path.relative(ROOT, file);
-    for (const pkgId of role.packages) {
-      if (!knownIds.has(pkgId)) {
-        console.log(`❌ ${relative} references unknown package: ${pkgId}`);
-        failed += 1;
-      }
-    }
   }
 
   if (failed > 0) {

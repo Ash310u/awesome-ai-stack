@@ -1,19 +1,36 @@
 {
   "id": "uiux-promax",
   "name": "UIUX ProMax",
-  "category": "skill",
-  "description": "Premium UI/UX generation skill",
-  "install": {
-    "npx": "npx -y uiux-promax@latest",
-    "npm": "npm install -g uiux-promax"
+  "type": "skill",
+  "description": "Premium UI/UX generation skill for design-forward interfaces",
+  "skill_init": {
+    "command": "uipro",
+    "npm": "npm install -g uipro-cli",
+    "npx": "npx -y uipro-cli@latest",
+    "package": "uipro-cli",
+    "ai_options": [
+      { "label": "Claude Code", "value": "claude" },
+      { "label": "Cursor", "value": "cursor" },
+      { "label": "Windsurf", "value": "windsurf" },
+      { "label": "Antigravity", "value": "antigravity" },
+      { "label": "GitHub Copilot", "value": "copilot" },
+      { "label": "Kiro", "value": "kiro" },
+      { "label": "Codex CLI", "value": "codex" },
+      { "label": "Qoder", "value": "qoder" },
+      { "label": "Roo Code", "value": "roocode" },
+      { "label": "Gemini CLI", "value": "gemini" },
+      { "label": "Trae", "value": "trae" },
+      { "label": "OpenCode", "value": "opencode" },
+      { "label": "Continue", "value": "continue" },
+      { "label": "CodeBuddy", "value": "codebuddy" },
+      { "label": "Droid (Factory)", "value": "droid" },
+      { "label": "KiloCode", "value": "kilocode" },
+      { "label": "Warp", "value": "warp" },
+      { "label": "Augment", "value": "augment" },
+      { "label": "All assistants", "value": "all" }
+    ]
   },
-  "config_target": [
-    "claude_desktop",
-    "cursor",
-    "windsurf"
-  ],
-  "config_snippet": {},
-  "tags": ["designer", "uiux", "frontend"],
-  "docs_url": "https://www.npmjs.com/package/uiux-promax",
+  "tags": ["designer", "developer", "ui", "frontend"],
+  "docs_url": "https://www.npmjs.com/package/uipro-cli",
   "verified": false
 }

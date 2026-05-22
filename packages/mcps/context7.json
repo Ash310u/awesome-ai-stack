@@ -1,7 +1,7 @@
 {
   "id": "context7",
   "name": "Context7",
-  "category": "mcp",
+  "type": "mcp",
   "description": "Live docs context for LLMs — always up to date",
   "install": {
     "npx": "npx -y @upstash/context7-mcp@latest",

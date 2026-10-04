@@ -1,0 +1,22 @@
+{
+  "id": "agent-qa",
+  "name": "Agent QA",
+  "type": "mcp",
+  "description": "Local stdio MCP server for YAML-based web, Android, and iOS test workflows. Requires Node.js 24+; test execution needs a configured local dashboard and dashboardUrl. Currently free under FSL-1.1-ALv2; configured model, browser, and device services may charge separately.",
+  "install": {
+    "npx": "npx --yes --package=agent-qa@0.1.21 -- agent-qa --help",
+    "npm": "npm install --global agent-qa@0.1.21"
+  },
+  "config_target": ["claude_desktop", "cursor"],
+  "config_snippet": {
+    "mcpServers": {
+      "agent-qa": {
+        "command": "npx",
+        "args": ["--yes", "--package=agent-qa@0.1.21", "--", "agent-qa", "mcp"]
+      }
+    }
+  },
+  "tags": ["developer", "testing", "yaml", "web", "mobile", "local mcp"],
+  "docs_url": "https://vostride.com/docs/agent-qa/mcp",
+  "verified": false
+}
